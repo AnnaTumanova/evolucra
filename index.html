@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolucra | AI & Systems Thinking Workshops</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* OKLCH palette — warm terracotta accent, tinted neutrals */
+            --primary: oklch(62% 0.16 25);           /* warm terracotta */
+            --primary-light: oklch(72% 0.12 25);
+            --primary-muted: oklch(52% 0.08 25);
+            
+            --accent-foundation: oklch(55% 0.14 25); /* terracotta */
+            --accent-intermediate: oklch(58% 0.12 200); /* teal-ish */
+            --accent-advanced: oklch(68% 0.14 85);   /* warm gold */
+            
+            /* Tinted neutrals — slight warmth toward brand hue */
+            --surface-1: oklch(12% 0.008 25);        /* darkest bg */
+            --surface-2: oklch(18% 0.008 25);        /* cards */
+            --surface-3: oklch(24% 0.006 25);        /* elevated */
+            
+            --text-primary: oklch(95% 0.005 25);    /* near-white, warm tint */
+            --text-secondary: oklch(75% 0.01 25);   /* muted text */
+            --text-tertiary: oklch(55% 0.01 25);    /* subtle text */
+            
+            --border: oklch(28% 0.01 25);           /* subtle borders */
+            --border-hover: oklch(38% 0.01 25);
+            
+            --success: oklch(65% 0.15 145);
+            --error: oklch(60% 0.2 25);
+        }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--surface-1);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background gradient */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 40%, oklch(25% 0.08 25 / 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, oklch(30% 0.06 200 / 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 30% at 60% 80%, oklch(28% 0.05 85 / 0.25) 0%, transparent 50%);
+            animation: gradientShift 20s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        /* Floating geometric shapes */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            border: 1px solid oklch(50% 0.05 25 / 0.15);
+            border-radius: 2px;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 5%;
+            transform: rotate(15deg);
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            right: 10%;
+            transform: rotate(-10deg);
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 30%;
+            right: 25%;
+            transform: rotate(45deg);
+            animation-delay: -10s;
+        }
+
+        .shape-4 {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 15%;
+            transform: rotate(-30deg);
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rotation, 15deg)); }
+            50% { transform: translateY(-20px) rotate(calc(var(--rotation, 15deg) + 5deg)); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background-image: 
+                linear-gradient(oklch(30% 0.01 25 / 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, oklch(30% 0.01 25 / 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 70%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: oklch(12% 0.008 25 / 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s ease-out;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, oklch(55% 0.12 25 / 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero h1 .highlight {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero h1 .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: underline 0.6s ease-out 1s forwards;
+        }
+
+        @keyframes underline {
+            to { transform: scaleX(1); }
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-tertiary);
+            margin-bottom: 48px;
+            max-width: 540px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease-out;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, oklch(100% 0 0 / 0.1), transparent);
+            transition: left 0.5s ease-out;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--surface-1);
+            box-shadow: 0 4px 20px oklch(62% 0.16 25 / 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px oklch(62% 0.16 25 / 0.35);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-2);
+            transform: translateY(-2px);
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        /* Positioning Section */
+        .positioning {
+            padding: 80px 24px;
+            background: var(--surface-2);
+        }
+
+        .positioning-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .positioning h2 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .positioning-statement {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(1.375rem, 3vw, 1.75rem);
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        .positioning-statement span {
+            color: var(--primary);
+            font-style: normal;
+            font-weight: 700;
+        }
+
+        /* Workshops Section */
+        .workshops {
+            padding: 100px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-header h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-header p {
+            font-size: 1rem;
+            color: var(--text-tertiary);
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .workshop-ladder {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .ladder-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .ladder-arrow {
+            color: var(--text-tertiary);
+        }
+
+        .workshops-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .workshop-card {
+            background: var(--surface-2);
+            border-radius: 12px;
+            padding: 36px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease-out;
+            position: relative;
+        }
+
+        .workshop-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 13px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 40%, var(--card-accent, var(--primary)) 100%);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .workshop-card:hover {
+            transform: translateY(-4px);
+            background: var(--surface-3);
+        }
+
+        .workshop-card:hover::before {
+            opacity: 1;
+        }
+
+        .foundation { --card-accent: var(--accent-foundation); }
+        .intermediate { --card-accent: var(--accent-intermediate); }
+        .advanced { --card-accent: var(--accent-advanced); }
+
+        .workshop-level {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 20px;
+        }
+
+        .foundation .workshop-level {
+            background: oklch(55% 0.14 25 / 0.15);
+            color: var(--accent-foundation);
+        }
+
+        .intermediate .workshop-level {
+            background: oklch(58% 0.12 200 / 0.15);
+            color: var(--accent-intermediate);
+        }
+
+        .advanced .workshop-level {
+            background: oklch(68% 0.14 85 / 0.15);
+            color: var(--accent-advanced);
+        }
+
+        .workshop-card h3 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.35;
+            letter-spacing: -0.01em;
+        }
+
+        .workshop-tagline {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .workshop-description {
+            color: var(--text-tertiary);
+            margin-bottom: 24px;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .workshop-for {
+            margin-bottom: 24px;
+        }
+
+        .workshop-for h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .workshop-for ul {
+            list-style: none;
+        }
+
+        .workshop-for li {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            padding: 5px 0;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .workshop-for li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-tertiary);
+        }
+
+        .workshop-outcomes {
+            background: var(--surface-3);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .workshop-outcomes h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .workshop-outcomes ul {
+            list-style: none;
+        }
+
+        .workshop-outcomes li {
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .workshop-outcomes li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .workshop-card .btn {
+            width: 100%;
+            justify-content: center;
+            margin-top: auto;
+        }
+
+        .foundation .btn-primary {
+            background: var(--accent-foundation);
+        }
+
+        .intermediate .btn-primary {
+            background: var(--accent-intermediate);
+        }
+
+        .advanced .btn-primary {
+            background: var(--accent-advanced);
+            color: var(--surface-1);
+        }
+
+        /* Agenda Accordion */
+        .agenda-section {
+            margin-bottom: 24px;
+        }
+
+        .agenda-toggle {
+            width: 100%;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease-out;
+        }
+
+        .agenda-toggle:hover {
+            background: var(--border);
+        }
+
+        .agenda-toggle svg {
+            transition: transform 0.2s ease-out;
+        }
+
+        .agenda-toggle.active svg {
+            transform: rotate(180deg);
+        }
+
+        .agenda-content {
+            display: none;
+            padding: 16px;
+            background: var(--surface-1);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .agenda-content.show {
+            display: block;
+        }
+
+        .agenda-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .agenda-item:last-child {
+            border-bottom: none;
+        }
+
+        .agenda-item h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .agenda-item p {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 24px;
+            background: var(--surface-2);
+        }
+
+        .about-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .about-header {
+            display: flex;
+            gap: 48px;
+            align-items: flex-start;
+            margin-bottom: 48px;
+        }
+
+        .about-photo {
+            flex-shrink: 0;
+        }
+
+        .about-photo img {
+            width: 200px;
+            height: 200px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease-out;
+        }
+
+        .about-photo {
+            position: relative;
+        }
+
+        .about-photo::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 1px solid var(--primary-muted);
+            border-radius: 16px;
+            opacity: 0.5;
+        }
+
+        .about-photo::after {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            opacity: 0.3;
+        }
+
+        .about-intro {
+            flex: 1;
+        }
+
+        .about-intro h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .about-title {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .about-text {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .about-links {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .about-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            transition: all 0.15s ease-out;
+        }
+
+        .about-link:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .about-experience {
+            margin-bottom: 48px;
+        }
+
+        .about-experience h3 {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .experience-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .experience-card {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .experience-card .role {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 0.9375rem;
+        }
+
+        .experience-card .company {
+            color: var(--primary);
+            font-size: 0.8125rem;
+            margin-bottom: 8px;
+        }
+
+        .experience-card .description {
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+            line-height: 1.6;
+        }
+
+        .about-skills {
+            margin-bottom: 48px;
+        }
+
+        .about-skills h3 {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-tag {
+            padding: 6px 12px;
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .about-bottom {
+            text-align: center;
+        }
+
+        .about-not {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .not-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .not-item span {
+            color: var(--error);
+        }
+
+        .about-is {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 28px;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .about-is p {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.125rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .about-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .about-links {
+                justify-content: center;
+            }
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, oklch(55% 0.12 25 / 0.06) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cta h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .cta p {
+            font-size: 1rem;
+            color: var(--text-tertiary);
+            margin-bottom: 40px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        /* Registration Form */
+        .registration-form {
+            max-width: 480px;
+            margin: 48px auto 0;
+            padding: 32px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .registration-form h3 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .registration-form .form-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--surface-1);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: all 0.2s ease-out;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px oklch(62% 0.16 25 / 0.15);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .form-group select option {
+            background: var(--surface-2);
+            color: var(--text-primary);
+        }
+
+        .registration-form .btn {
+            width: 100%;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .form-success.show {
+            display: block;
+        }
+
+        .form-success svg {
+            width: 48px;
+            height: 48px;
+            color: var(--success);
+            margin-bottom: 16px;
+        }
+
+        .form-success h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-success p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .workshops-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workshop-card {
+                padding: 32px 24px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .about-not {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .ladder-step {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Visual Background Elements -->
+    <div class="gradient-bg"></div>
+    <div class="grid-pattern"></div>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <div class="logo">Evolucra</div>
+            <ul class="nav-links">
+                <li><a href="#workshops">Workshops</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">AI & Systems Thinking</div>
+            <h1>Think, Decide, and Work <span class="highlight">Smarter with AI</span></h1>
+            <p>Hands-on workshops for professionals who want to use AI in a structured, practical way — without overwhelm or random experimentation.</p>
+            <div class="hero-cta">
+                <a href="#workshops" class="btn btn-primary">
+                    Explore Workshops
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Positioning Section -->
+    <section class="positioning">
+        <div class="positioning-content">
+            <h2>My Approach</h2>
+            <p class="positioning-statement">
+                "I help professionals <span>think, decide, and work</span> using AI and systems thinking"
+            </p>
+        </div>
+    </section>
+
+    <!-- Workshops Section -->
+    <section class="workshops" id="workshops">
+        <div class="container">
+            <div class="section-header">
+                <h2>Workshop Portfolio</h2>
+                <p>Three distinct workshops designed as a learning ladder — from clarity to thinking to systems.</p>
+            </div>
+
+            <div class="workshop-ladder">
+                <div class="ladder-step">1️⃣ Clarity</div>
+                <span class="ladder-arrow">→</span>
+                <div class="ladder-step">2️⃣ Thinking</div>
+                <span class="ladder-arrow">→</span>
+                <div class="ladder-step">3️⃣ Systems</div>
+            </div>
+
+            <div class="workshops-grid">
+                <!-- Workshop 1: Foundation -->
+                <div class="workshop-card foundation">
+                    <span class="workshop-level">🚀 Foundation</span>
+                    <h3>AI in Practice: From Tools to Real-Life Systems</h3>
+                    <p class="workshop-tagline">"Make AI Work for You — In Real Life, Not Just in Theory"</p>
+                    <p class="workshop-description">A hands-on workshop for professionals who want to use AI in a structured, practical way — without overwhelm or random experimentation.</p>
+                    
+                    <div class="workshop-for">
+                        <h4>Who This Is For</h4>
+                        <ul>
+                            <li>Professionals working with information, communication, or decisions</li>
+                            <li>People overwhelmed by AI tools</li>
+                            <li>Anyone who wants structure instead of chaos</li>
+                        </ul>
+                    </div>
+
+                    <div class="agenda-section">
+                        <button class="agenda-toggle" onclick="toggleAgenda(this)">
+                            View Agenda
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="agenda-content">
+                            <div class="agenda-item">
+                                <h5>Understanding AI without hype</h5>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Structuring your work with AI</h5>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Core workflows</h5>
+                                <p>Content, research, communication</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Build your first system</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workshop-outcomes">
+                        <h4>What You'll Walk Away With</h4>
+                        <ul>
+                            <li>Clear understanding of practical AI usage</li>
+                            <li>One working workflow</li>
+                            <li>Structured approach you can reuse</li>
+                        </ul>
+                    </div>
+
+                    <a href="#contact" class="btn btn-primary">Join the Workshop</a>
+                </div>
+
+                <!-- Workshop 2: Intermediate -->
+                <div class="workshop-card intermediate">
+                    <span class="workshop-level">⚙️ Intermediate — Differentiator</span>
+                    <h3>Decision-Making with Data & AI: Think Like a Data Scientist</h3>
+                    <p class="workshop-tagline">"Stop Guessing. Start Thinking in Systems."</p>
+                    <p class="workshop-description">Learn how to make better decisions using data, structured thinking, and AI — even if you're not a data scientist.</p>
+                    
+                    <div class="workshop-for">
+                        <h4>Who This Is For</h4>
+                        <ul>
+                            <li>Managers, founders, consultants</li>
+                            <li>People making decisions under uncertainty</li>
+                            <li>Professionals who want to think more clearly and structurally</li>
+                        </ul>
+                    </div>
+
+                    <div class="agenda-section">
+                        <button class="agenda-toggle" onclick="toggleAgenda(this)">
+                            View Agenda
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="agenda-content">
+                            <div class="agenda-item">
+                                <h5>Part 1 — Why Most Decisions Are Flawed</h5>
+                                <p>Cognitive biases, noise, and intuition traps</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Part 2 — Structured Thinking Frameworks</h5>
+                                <p>How to decompose problems like a data scientist</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Part 3 — AI as a Decision Partner</h5>
+                                <p>Using AI to explore scenarios, validate ideas, and challenge thinking</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Part 4 — Practical Application</h5>
+                                <p>Apply frameworks to your real case</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workshop-outcomes">
+                        <h4>What You'll Walk Away With</h4>
+                        <ul>
+                            <li>Clear thinking under uncertainty</li>
+                            <li>Repeatable decision framework</li>
+                            <li>Ability to use AI for reasoning, not just execution</li>
+                        </ul>
+                    </div>
+
+                    <a href="#contact" class="btn btn-primary">Save Your Spot</a>
+                </div>
+
+                <!-- Workshop 3: Advanced -->
+                <div class="workshop-card advanced">
+                    <span class="workshop-level">🌍 Advanced — Premium</span>
+                    <h3>Build AI-Powered Workflows: From Tasks to Systems</h3>
+                    <p class="workshop-tagline">"Stop Doing Tasks. Start Building Systems."</p>
+                    <p class="workshop-description">Learn how to design workflows where AI supports your work consistently — not occasionally.</p>
+                    
+                    <div class="workshop-for">
+                        <h4>Who This Is For</h4>
+                        <ul>
+                            <li>Professionals already using AI tools</li>
+                            <li>Consultants, builders, operators</li>
+                            <li>People who want to scale their work through systems</li>
+                        </ul>
+                    </div>
+
+                    <div class="agenda-section">
+                        <button class="agenda-toggle" onclick="toggleAgenda(this)">
+                            View Agenda
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="agenda-content">
+                            <div class="agenda-item">
+                                <h5>Part 1 — From Tasks to Systems</h5>
+                                <p>Why most AI usage doesn't scale</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Part 2 — Workflow Design Principles</h5>
+                                <p>Inputs → processing → outputs</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Part 3 — Building Blocks</h5>
+                                <p>Prompts, memory/context, automation logic</p>
+                            </div>
+                            <div class="agenda-item">
+                                <h5>Part 4 — System Design</h5>
+                                <p>Design your own workflow</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workshop-outcomes">
+                        <h4>What You'll Walk Away With</h4>
+                        <ul>
+                            <li>One designed AI workflow</li>
+                            <li>System thinking mindset</li>
+                            <li>Ability to scale your work</li>
+                        </ul>
+                    </div>
+
+                    <a href="#contact" class="btn btn-primary">Join the Advanced Session</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="about-content">
+            <div class="about-header" style="display: block; text-align: center;">
+                <div class="about-intro">
+                    <h2>About Evolucra</h2>
+                    <p class="about-title">AI & Systems Thinking Training</p>
+                    <p class="about-text">We help professionals and teams work smarter with AI through structured, hands-on workshops. Our approach combines 7+ years of experience in machine learning, data science, and systems design — delivering practical skills that translate directly to real-world results.</p>
+                    <div class="about-links" style="justify-content: center;">
+                        <a href="https://www.linkedin.com/in/anna-t-689a62160/" class="about-link" target="_blank">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                            LinkedIn
+                        </a>
+                        <a href="mailto:anna.tumanova@prosvasimi.com" class="about-link">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-experience">
+                <h3>What We Bring</h3>
+                <div class="experience-grid">
+                    <div class="experience-card">
+                        <p class="role">AI Systems & Agents</p>
+                        <p class="description">Building intelligent agents, RAG architectures, and knowledge systems that automate workflows.</p>
+                    </div>
+                    <div class="experience-card">
+                        <p class="role">Decision Science</p>
+                        <p class="description">A/B testing frameworks, statistical modeling, and data-driven decision systems.</p>
+                    </div>
+                    <div class="experience-card">
+                        <p class="role">Machine Learning</p>
+                        <p class="description">NLP, transformers, predictive modeling, and cloud deployment (GCP, Azure, AWS).</p>
+                    </div>
+                    <div class="experience-card">
+                        <p class="role">Product & Strategy</p>
+                        <p class="description">Concept validation, stakeholder research, and translating tech into business outcomes.</p>
+                    </div>
+                    <div class="experience-card">
+                        <p class="role">Systems Thinking</p>
+                        <p class="description">Designing scalable workflows and connecting tools into coherent, repeatable processes.</p>
+                    </div>
+                    <div class="experience-card">
+                        <p class="role">Workshop Facilitation</p>
+                        <p class="description">Hands-on teaching that bridges theory and practice for professionals at all levels.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-skills">
+                <h3>Core Expertise</h3>
+                <div class="skills-list">
+                    <span class="skill-tag">Machine Learning</span>
+                    <span class="skill-tag">Generative AI</span>
+                    <span class="skill-tag">RAG Systems</span>
+                    <span class="skill-tag">LLMs</span>
+                    <span class="skill-tag">NLP / Transformers</span>
+                    <span class="skill-tag">A/B Testing</span>
+                    <span class="skill-tag">Data Analysis</span>
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">GCP / Azure / AWS</span>
+                    <span class="skill-tag">Decision Science</span>
+                </div>
+            </div>
+
+            <div class="about-bottom">
+                <div class="about-is">
+                    <p>"We help professionals think, decide, and work using AI and systems"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact">
+        <h2>Ready to Level Up?</h2>
+        <p>Choose your starting point and begin your journey from tools to systems.</p>
+        <a href="mailto:anna.tumanova@prosvasimi.com" class="btn btn-primary">
+            Get in Touch
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <!-- Registration Form -->
+        <div class="registration-form" id="registration-form">
+            <h3>Join the Waiting List</h3>
+            <p class="form-subtitle">Be the first to know when registration opens</p>
+            
+            <form id="waitlist-form" onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workshop">Select Workshop</label>
+                    <select id="workshop" name="workshop" required>
+                        <option value="" disabled selected>Choose a workshop...</option>
+                        <option value="foundation">🚀 Foundation — AI in Practice</option>
+                        <option value="intermediate">⚙️ Intermediate — Decision-Making with Data & AI</option>
+                        <option value="advanced">🌍 Advanced — Build AI-Powered Workflows</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    Join Waiting List
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="form-success" id="form-success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <h4>You're on the list!</h4>
+                <p>We'll notify you when registration opens.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Evolucra. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function toggleAgenda(button) {
+            button.classList.toggle('active');
+            const content = button.nextElementSibling;
+            content.classList.toggle('show');
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('waitlist-form');
+            const success = document.getElementById('form-success');
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                workshop: document.getElementById('workshop').value
+            };
+            
+            // Here you would typically send to a backend/API
+            console.log('Form submitted:', formData);
+            
+            // Show success message
+            form.style.display = 'none';
+            success.classList.add('show');
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(15, 23, 42, 0.98)';
+            } else {
+                nav.style.background = 'rgba(15, 23, 42, 0.9)';
+            }
+        });
+    </script>
+</body>
+</html>
