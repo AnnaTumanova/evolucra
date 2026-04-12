@@ -1613,7 +1613,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Server error'); });
+                }
+                return response.json();
+            })
             .then(result => {
                 if (result.success) {
                     form.style.display = 'none';
@@ -1623,12 +1628,12 @@
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = 'Join Waiting List <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
                 } else {
-                    throw new Error(result.error);
+                    throw new Error(result.error || 'Unknown error');
                 }
             })
             .catch((error) => {
                 console.error('Form submission error:', error);
-                alert('There was an error submitting the form. Please try again.');
+                alert('Error: ' + error.message + '. Please try again.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Join Waiting List <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
             });
