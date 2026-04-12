@@ -92,7 +92,8 @@
             height: 300px;
             top: 10%;
             left: 5%;
-            transform: rotate(15deg);
+            --rotation: 15deg;
+            transform: rotate(var(--rotation));
             animation-delay: 0s;
         }
 
@@ -101,7 +102,8 @@
             height: 200px;
             top: 60%;
             right: 10%;
-            transform: rotate(-10deg);
+            --rotation: -10deg;
+            transform: rotate(var(--rotation));
             animation-delay: -5s;
         }
 
@@ -110,7 +112,8 @@
             height: 150px;
             top: 30%;
             right: 25%;
-            transform: rotate(45deg);
+            --rotation: 45deg;
+            transform: rotate(var(--rotation));
             animation-delay: -10s;
         }
 
@@ -119,7 +122,8 @@
             height: 100px;
             bottom: 20%;
             left: 15%;
-            transform: rotate(-30deg);
+            --rotation: -30deg;
+            transform: rotate(var(--rotation));
             animation-delay: -7s;
         }
 
@@ -193,6 +197,50 @@
         }
 
         .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            z-index: 99;
+        }
+
+        .mobile-menu.show {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 12px 0;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-menu a:hover {
             color: var(--text-primary);
         }
 
@@ -1112,6 +1160,10 @@
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
             }
 
             .workshops-grid {
