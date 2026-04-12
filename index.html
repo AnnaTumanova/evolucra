@@ -1608,11 +1608,10 @@
             };
             
             // Submit to Google Sheets
-            fetch('https://script.google.com/macros/s/AKfycbx80vEoAFmIZ3ytu3nFO4Jc2oqSjtY8y2lqsPSsELGDiRfarxC3AbYoDwlHrDYx8wwA/exec', {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+            const params = new URLSearchParams(data);
+            fetch('https://script.google.com/macros/s/AKfycbxmtZzXTsakkjA61Kpv1JOOj4oHtH48TwABp1p93hsBkQ5wD1b7sLjL-TfeEhntfBWJ/exec?' + params, {
+                method: 'GET',
+                mode: 'no-cors'
             })
             .then(() => {
                 // With no-cors mode, we assume success if no error
