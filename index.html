@@ -1538,8 +1538,7 @@
             <h3>Join the Waiting List</h3>
             <p class="form-subtitle">Be the first to know when registration opens</p>
             
-            <form id="waitlist-form" name="waitlist" method="POST" data-netlify="true" onsubmit="handleFormSubmit(event)">
-                <input type="hidden" name="form-name" value="waitlist">
+            <form id="waitlist-form" onsubmit="handleFormSubmit(event)">
                 <div class="form-group">
                     <label for="name">Your Name</label>
                     <input type="text" id="name" name="name" placeholder="Enter your name" required>
@@ -1595,24 +1594,43 @@
             event.preventDefault();
             const form = document.getElementById('waitlist-form');
             const success = document.getElementById('form-success');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
             
             // Get form data
-            const formData = new FormData(form);
+            const data = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                workshop: document.getElementById('workshop').value
+            };
             
-            // Submit to Netlify Forms
-            fetch('/', {
+            // Submit to MongoDB API
+            fetch('/api/waitlist', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             })
-            .then(() => {
-                // Show success message
-                form.style.display = 'none';
-                success.classList.add('show');
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    form.style.display = 'none';
+                    success.classList.add('show');
+                } else if (result.error === 'Email already registered') {
+                    alert('This email is already on the waitlist!');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Join Waiting List <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                } else {
+                    throw new Error(result.error);
+                }
             })
             .catch((error) => {
                 console.error('Form submission error:', error);
                 alert('There was an error submitting the form. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Join Waiting List <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
             });
         }
 

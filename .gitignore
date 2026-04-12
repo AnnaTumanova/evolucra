@@ -21,3 +21,8 @@ build/
 # Temp files
 *.tmp
 *.temp
+
+# Environment variables
+.env
+.env.local
+.env*.local
