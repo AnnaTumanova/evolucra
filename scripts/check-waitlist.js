@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || "mongodb+srv://Vercel-Admin-atlas-gray-cave:7NR4Kb8Iev8fA8D7@atlas-gray-cave.wxfcwog.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI || "mongodb+srv://Vercel-Admin-atlas-gray-cave:bSyrWq9a38ydnSLg@atlas-gray-cave.wxfcwog.mongodb.net/?retryWrites=true&w=majority";
 
 async function checkWaitlist() {
   const client = new MongoClient(uri);

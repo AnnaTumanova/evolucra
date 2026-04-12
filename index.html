@@ -1607,33 +1607,21 @@
                 workshop: document.getElementById('workshop').value
             };
             
-            // Submit to MongoDB API
-            fetch('/api/waitlist', {
+            // Submit to Google Sheets
+            fetch('https://script.google.com/macros/s/AKfycbx80vEoAFmIZ3ytu3nFO4Jc2oqSjtY8y2lqsPSsELGDiRfarxC3AbYoDwlHrDYx8wwA/exec', {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw new Error(err.error || 'Server error'); });
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (result.success) {
-                    form.style.display = 'none';
-                    success.classList.add('show');
-                } else if (result.error === 'Email already registered') {
-                    alert('This email is already on the waitlist!');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Join Waiting List <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-                } else {
-                    throw new Error(result.error || 'Unknown error');
-                }
+            .then(() => {
+                // With no-cors mode, we assume success if no error
+                form.style.display = 'none';
+                success.classList.add('show');
             })
             .catch((error) => {
                 console.error('Form submission error:', error);
-                alert('Error: ' + error.message + '. Please try again.');
+                alert('Error submitting form. Please try again.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Join Waiting List <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
             });
