@@ -1650,6 +1650,13 @@
                 mode: 'no-cors'
             })
             .then(() => {
+                // Send Telegram notification
+                fetch('/api/waitlist-notify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).catch(err => console.log('Notification sent'));
+                
                 // With no-cors mode, we assume success if no error
                 form.style.display = 'none';
                 success.classList.add('show');
