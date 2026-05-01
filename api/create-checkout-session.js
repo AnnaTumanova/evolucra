@@ -27,15 +27,18 @@ export default async function handler(req, res) {
   try {
     const { workshop, customerEmail, customerName } = req.body;
 
+    console.log('Checkout request:', { workshop, customerEmail });
+    console.log('Available prices:', WORKSHOP_PRICES);
+
     // Validate workshop
     if (!workshop || !WORKSHOP_PRICES[workshop]) {
-      return res.status(400).json({ error: 'Invalid workshop selected' });
+      return res.status(400).json({ error: `Invalid workshop: ${workshop}` });
     }
 
     const priceId = WORKSHOP_PRICES[workshop];
     
     if (!priceId) {
-      return res.status(400).json({ error: 'Workshop price not configured' });
+      return res.status(400).json({ error: `Price not configured for: ${workshop}. Please set STRIPE_PRICE_${workshop.toUpperCase()} in environment variables.` });
     }
 
     // Create Stripe checkout session
