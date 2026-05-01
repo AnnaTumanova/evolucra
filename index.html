@@ -12,6 +12,8 @@
       gtag('js', new Date());
       gtag('config', 'G-7PEF8N5B6Y');
     </script>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -1357,7 +1359,12 @@
                         </ul>
                     </div>
 
-                    <a href="#contact" class="btn btn-primary">Join the Workshop</a>
+                    <button class="btn btn-primary" onclick="buyWorkshop('foundation')">
+                        Buy Workshop
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Workshop 2: Intermediate -->
@@ -1412,7 +1419,12 @@
                         </ul>
                     </div>
 
-                    <a href="#contact" class="btn btn-primary">Save Your Spot</a>
+                    <button class="btn btn-primary" onclick="buyWorkshop('intermediate')">
+                        Buy Workshop
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Workshop 3: Advanced -->
@@ -1467,7 +1479,12 @@
                         </ul>
                     </div>
 
-                    <a href="#contact" class="btn btn-primary">Join the Advanced Session</a>
+                    <button class="btn btn-primary" onclick="buyWorkshop('advanced')">
+                        Buy Workshop
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1680,6 +1697,48 @@
         function closeMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.remove('show');
+        }
+
+        // Stripe checkout
+        const stripe = Stripe('pk_live_51MYNP4BNuFR4IMXt73zfnDpwUHxmKgzRJAn3wlcWLebyFxhdWFhavMZmAddHbziqeaHZW6w0WHfv9WM3tcuD8YdE003n4C8XKk');
+
+        async function buyWorkshop(workshopType) {
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = 'Processing...';
+
+            try {
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ workshop: workshopType })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Redirect to Stripe Checkout
+                window.location.href = data.url;
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Unable to start checkout. Please try again or contact support.');
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
+        // Check for payment success/cancel in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            alert('🎉 Payment successful! Check your email for workshop details.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (urlParams.get('payment') === 'cancelled') {
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
     </script>
 </body>
