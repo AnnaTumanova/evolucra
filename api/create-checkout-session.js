@@ -43,7 +43,14 @@ export default async function handler(req, res) {
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      // Let Stripe show the best payment methods for the buyer's location/device
+      // (card, BLIK, Apple Pay, Google Pay, etc.) instead of a hardcoded list.
+      automatic_payment_methods: { enabled: true },
+      // Auto-calculate VAT/sales tax based on the buyer's location (requires
+      // Stripe Tax to be enabled and an origin address set in the Stripe Dashboard).
+      automatic_tax: { enabled: true },
+      // Required so Stripe Tax has an address to calculate tax from.
+      billing_address_collection: 'required',
       mode: 'payment',
       line_items: [
         {
