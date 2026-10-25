@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { verifyTurnstile, getClientIp } from './lib/turnstile.js';
 
 const uri = process.env.MONGODB_URI;
 let cachedClient = null;
@@ -29,7 +30,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, workshop } = req.body;
+    const { name, email, workshop, website, turnstileToken } = req.body || {};
+
+    // Honeypot: real users never see or fill this field
+    if (website) {
+      return res.status(201).json({ success: true });
+    }
 
     // Validate required fields
     if (!name || !email || !workshop) {
@@ -40,6 +46,11 @@ export default async function handler(req, res) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    const isHuman = await verifyTurnstile(turnstileToken, getClientIp(req));
+    if (!isHuman) {
+      return res.status(403).json({ error: 'Human verification failed' });
     }
 
     const client = await connectToDatabase();

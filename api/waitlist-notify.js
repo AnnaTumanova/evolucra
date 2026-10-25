@@ -1,4 +1,9 @@
 import { sendTelegramNotification, formatWaitlistNotification } from './lib/telegram.js';
+import { verifyTurnstile, getClientIp } from './lib/turnstile.js';
+
+const GOOGLE_SHEETS_WEBHOOK_URL =
+  process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
+  'https://script.google.com/macros/s/AKfycbxmtZzXTsakkjA61Kpv1JOOj4oHtH48TwABp1p93hsBkQ5wD1b7sLjL-TfeEhntfBWJ/exec';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -15,10 +20,27 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, workshop } = req.body;
+    const { name, email, workshop, website, turnstileToken } = req.body || {};
+
+    // Honeypot: real users never see or fill this field
+    if (website) {
+      return res.status(200).json({ success: true });
+    }
 
     if (!name || !email || !workshop) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const isHuman = await verifyTurnstile(turnstileToken, getClientIp(req));
+    if (!isHuman) {
+      return res.status(403).json({ error: 'Human verification failed' });
+    }
+
+    const params = new URLSearchParams({ name, email, workshop });
+    const sheetsResponse = await fetch(`${GOOGLE_SHEETS_WEBHOOK_URL}?${params}`);
+    if (!sheetsResponse.ok) {
+      console.error('Google Sheets error:', sheetsResponse.status);
+      return res.status(502).json({ error: 'Failed to save signup' });
     }
 
     // Send Telegram notification
